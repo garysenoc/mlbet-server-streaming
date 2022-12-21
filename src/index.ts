@@ -23,14 +23,11 @@ const io = new Server(server, {
 	}
 });
 
-let broadcaster = "";
-
 io.sockets.on("error", (e) => console.log(e));
 io.sockets.on("connection", (socket) => {
 	console.log("server connection", socket.id);
 	socket.on("broadcaster", (roomid) => {
 		console.log("server broadcast", socket.id);
-		broadcaster = socket.id;
 		socket.broadcast.emit("broadcaster", socket.id, roomid);
 	});
 	socket.on("watcher", (broadcaster) => {
@@ -51,7 +48,7 @@ io.sockets.on("connection", (socket) => {
 	});
 	socket.on("disconnect", () => {
 		console.log("server disconnect", socket.id);
-		socket.to(broadcaster).emit("disconnectPeer", socket.id);
+		io.emit("disconnectPeer", socket.id);
 	});
 });
 server.listen(port, () => console.log(`Server is running on port ${port}`));
